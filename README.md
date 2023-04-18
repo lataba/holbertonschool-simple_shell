@@ -1,4 +1,4 @@
-### C - Doubly linked lists
+# C - Simple Shell
 
 ## Learning Objectives :page_with_curl: :heavy_check_mark:
 
@@ -29,4 +29,4 @@
 * **12.** []()
 
 
-# By Laura Ballesté as part of the [Holberton Uruguay](https://holbertonschool.uy/) study program.
+### By Laura Ballesté and Nicolas Fernandez as part of the [Holberton Uruguay](https://holbertonschool.uy/) study program.
