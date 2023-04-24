@@ -2,71 +2,69 @@
 
 int main(void)
 {
-	char *line = NULL;
-	size_t bufsize = 0;
-	int readline = 0;
-	char **argv = NULL;
-	char *token;
-	int i = 0, size = 64;
+	char *line = NULL; /* inicializa un puntero a char para almacenar la línea ingresada por el usuario */
+	size_t bufsize = 0; /* tamaño inicial del buffer que getline asignará de forma dinámica */
+	char **argv = NULL; /* inicializa un puntero a puntero a char para almacenar los argumentos ingresados por el usuario */
+	int i = 0, size = 0;
 
-	signal(SIGINT, ig_ctrlc);
+	signal(SIGINT, ig_ctrlc); /* detecta que si es ctrl + C imprime '\n' y si es ctrl + D termina */
 
 	while(1)
 	{
 		printf("$ ");
 
-		readline = getline(&line, &bufsize, stdin);
-
-		if (readline == -1) /* si hay error en leer la entrada */
+		if (getline(&line, &bufsize, stdin) == -1)
 			break;
-
+		
 		if (line[0] == '\n') /* enter case */
 			continue;
 
-		token = strtok(line, " ");
-		
-		while(token != NULL)
+		size = 1, i = 0; /* se setea i = 0 para que al volver a itinerar en el while no de problemas ya que queda guardado el valor anteriormente usado de i */
+
+		while(line[i])
 		{
-			size++;
-			token = strtok(NULL, " ");
+			if(line[i] == 32)
+			{
+				size++;
+			}
+			i++;
 		}
-
-		if (size == 0)
-			continue;
-
-		argv = malloc((size + 1) * sizeof(char *));
 		
+		line[i - 1] = '\0'; /* si antes del '\0' siempre hay un '\n' asi que si i - 1 = '\n' esto hace que se iguale a '\0' sacando el '\n' */
+
+		argv = (char **)malloc(sizeof(char *) * size);/* char ** (argv[0] -> "/bin/ls") ya que apunta a un puntero */
+		/* va a tener 1 espacio en la memoria de argv para cada palabra  */
 		if (!argv)
 		{
-			perror("error malloc");
+			perror("malloc fail");
 			exit(EXIT_FAILURE);
 		}
 
-		token = strtok(line, " ");
-		i = 0;
+		argv[0] = strtok(line, " ");
+	
+		i = 1;
 
-		while(token != NULL)
-		{
-			argv[i] = token;
-			token = strtok(NULL, " ");
-			i++;
-		}
-		argv[size] = NULL;
+		while(i < size) /* recorrer cada argumento de argv ya que argv contiene los argumentos */
+			argv[i++] = strtok(NULL, " ");
+
+		printf("{%s}\n", argv[0]);
 
 		if (strcmp(argv[0], "exit") == 0)
 		{
-			free(line);
 			free(argv);
 			exit(0);
 		}
 
 		if (strcmp(argv[0], "env") == 0)
 			genv();
+		else
+		{
+			comands(argv);
+		}
 
-		comands(argv);
 		free(argv);
 	}
-	free(line);
+
 	return(0);
 }
 
@@ -92,28 +90,45 @@ void ig_ctrlc(int signum)
 
 int comands(char **argv)
 {
-	int status = 0;
-	pid_t pid;
-
+	char *token;
+	pid_t pid;	
+	
+	token = malloc(sizeof(char *) * strlen(argv[0]) + 6);
 	pid = fork();
 
 	if (pid == -1)
 	{
 		perror("Error");
-		return(1);
+		exit(EXIT_FAILURE);
 	}
-
+	
 	else if (pid == 0)
 	{
-		if (execve(argv[0], argv, NULL) == -1)
+		if (strchr(argv[0], '/')) /* 1 ya que el string 1 contiene mas chars que unicamente "/" */
+			;
+		else
 		{
-			perror("execve");
+
+			sprintf(token, "/bin/%s", argv[0]); /* le aigno token ya que una variable no se puede asignar asi misma */
+			argv[0] = token;
+
+			printf("[%s]\n", argv[0]);
+		}
+
+		if (access(argv[0], X_OK) == -1)
+		{
+			perror("error");
+			exit(EXIT_FAILURE);
+		}
+		if (execve(argv[0], argv, environ) == -1)
+		{
+			perror("error");
 			exit(EXIT_FAILURE);
 		}
 	}
 	else
 	{
-		wait(&status);
+		wait(NULL);
 	}
 
 	return(0);
