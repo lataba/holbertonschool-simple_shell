@@ -13,20 +13,20 @@ int fork_child(char *fullpath, char **array_tok)
 	int child_status, execve_status;
 	char **env = environ;
 
-	pid = fork();
-	if (pid == -1)
+	pid = fork(); /*llamado a fork para crear proceso hijo*/
+	if (pid == -1) /*error al crear el proceso hijo*/
 	{
 		perror("fork");
 		exit(EXIT_FAILURE);
 	}
-	if (pid == 0)
+	if (pid == 0) /*si fork devuelve 0, el proceso hijo ejecuta el programa con la llamada a execve()*/
 	{
-		execve_status = execve(fullpath, array_tok, env);
+		execve_status = execve(fullpath, array_tok, env); /*ejecucion con la ruta completa, argumentos y variables de entorno*/
 		if (execve_status == -1)
-			return (-1);
+			return (-1); /*falla en la ejecucion dentro del proceso hijo*/
 	}
 	else
-		wait(&child_status);
+		wait(&child_status); /*el proceso padre espera la finalizacion del hijo, si es exitosa devuelve el PID del hijo*/
 
 	return (0);
 }

@@ -17,10 +17,11 @@ extern char **environ;
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv);
 char **store_tokens(char *line);
+int str_count(char *str);
 char *get_env(char *var_name);
 int path_match(char **array_tok);
+char *fullpath_func(char *array_tok, char *path_value);
 void free_arr(char **array);
-void *re_alloc(void *block, unsigned int old_size, unsigned int new_size);
 int fork_child(char *fullpath, char **array_tok);
 
 #endif
