@@ -1,4 +1,4 @@
-### C - Simple Shell Proyect
+# C - Simple Shell Proyect
 
 ![simple shell](https://d2uusema5elisf.cloudfront.net/courses/30-days-of-webdev/day-04/public/assets/pistachio.png)
 
@@ -39,4 +39,4 @@ $ echo "ls -la" | ./hsh
 ## Flowchart
 ![flow_img]()
 
-# By [Laura Ballesté](https://github.com/lataba) and [Nicolás Fernández](https://github.com/Nicoou) as part of the [Holberton Uruguay](https://holbertonschool.uy/) study program.
+### By [Laura Ballesté](https://github.com/lataba) and [Nicolás Fernández](https://github.com/Nicoou) as part of the [Holberton Uruguay](https://holbertonschool.uy/) study program.
