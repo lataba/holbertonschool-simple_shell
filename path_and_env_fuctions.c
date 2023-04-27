@@ -18,8 +18,10 @@ char **store_tokens(char *line)
 
 	array_tok = malloc(sizeof(char *) * (line_len + 1)); /*se asigna la memoria para el array*/
 	if (array_tok == NULL) /*si malloc falla, sale*/
+	{
+		free(line);
 		return (NULL);
-
+	}
 	token = strtok(line, "\n\t "); /*se separa la linea en tokens*/
 	while (token != NULL)
 	{
@@ -59,20 +61,6 @@ int str_count(char *str)
 }
 
 /**
- * free_arr - Frees an array of char pointers
- * @array: The array to be free
- */
-void free_arr(char **array)
-{
-	int i;
-
-	i = 0;
-	for (i = 0; array[i] ; i++) /*se libera cada celda del array*/
-		free(array[i]);
-	free(array); /*se libera el array*/
-}
-
-/**
  * get_env - Function that gets the value of enviroment variable.
  * @var_name: The name of the enviroment variable.
  * Return: The value of the environment Variable or NULL.
@@ -104,7 +92,6 @@ char *get_env(char *var_name)
 		free(var_value); /*si no coincide se libera la memoria y sigue buscando*/
 		i++;
 	}
-	free(var_value);
 	return (NULL);
 }
 

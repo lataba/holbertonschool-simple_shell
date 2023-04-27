@@ -7,32 +7,43 @@
  * Return: Exit value
  */
 
-int main(__attribute__((unused)) int argc, __attribute__((unused)) char **argv)
+int main(void)
 {
-	char *line = NULL, **command; /*"line" guarda el comando del usuario, "command" guarda el comando en tokens*/
-	size_t len = 0; /*tipo no signado, largo de line*/
-	ssize_t nread; /*tipo signado, cantidad de tokens en que se divide line*/
+	char *line, **command;
+	int built_status, path_status;
+	size_t len;
+	ssize_t nread;
 
 	while (1)
 	{
 		len = 0;
-		if (isatty(STDIN_FILENO) == 1) /*verifica si el programa se ejecuta en modo interactivo*/
-			printf("$ "); /*si es en modo interactivo, imprime el prompt*/
-		if (feof(stdin) == 1)
-			break; /*si el usuario ingresa ctrl + D, EOF, corta la ejecucion*/
+		if (isatty(STDIN_FILENO) != 0)
+			printf("$ ");
+		nread = getline(&line, &len, stdin);
 
-		nread = getline(&line, &len, stdin); /*se lee la linea ingresada por el usuario*/
-		if (nread == -1) /*si getline falla, sale*/
-		{
-			perror("getline");
-			exit(EXIT_FAILURE);
-		}
-		if (nread > 0 && line[nread - 1] == '\n') /*si el usuario ingresa salto de linea, se cambia por fin de linea*/
+		if (nread == 1)
+			exit(EXIT_SUCCESS);
+
+		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
-		command = store_tokens(line); /*command toma los valores de los tokens del line*/
-		if (path_match(command) == 0) /*path_match busca el ejecutable del comando en el path*/
-			fork_child(command[0], command); /*si se encuentra el ejecutable, se ejecuta crando un proceso hijo con fork_child*/
-		free(line); /*se libera la linea*/
+		command = store_tokens(line);
+
+		built_status = builtin_execute(command);
+
+		if (built_status == 0 || built_status == -1)
+		{
+			free(command);
+			free(line);
+		}
+		if (built_status == 0)
+			continue;
+		if (built_status == -1)
+			_exit(EXIT_SUCCESS);
+
+		path_status = path_match(command);
+		if (path_status == 0)
+			fork_child(command[0], command);
+		free(line);
 	}
 	return (0);
 }
