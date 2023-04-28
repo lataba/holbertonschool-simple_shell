@@ -30,7 +30,7 @@ int fork_child(char *fullpath, char **array_tok)
 
 	if (WIFEXITED(child_status))
 		output_status = WEXITSTATUS(child_status);
-	free(fullpath);
+
 	return (output_status);
 }
 

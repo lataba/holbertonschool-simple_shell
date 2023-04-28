@@ -44,7 +44,7 @@ int main(void)
 			if (path_status == 0)
 				fork_child(command[0], command);
 			free(line);
-			free(command);
+			free_arr(command);
 		}
 		else
 			free(line);
