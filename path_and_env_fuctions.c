@@ -8,34 +8,40 @@
 
 char **store_tokens(char *line)
 {
-	char **array_tok = NULL, *token = NULL; /*variables que guardan los tokens*/
-	int i = 0, line_len = 0;
+	char **array_tok = NULL, *token = NULL;
+	int i = 0, line_len = 0, j = 0;
 
-	if (line == NULL) /*si la linea no es valida devuelve puntero nulo*/
+	if (line == NULL)
 		return (NULL);
 
-	line_len = str_count(line); /*line_len guarda la cantidad de palabras que vienen en la linea*/
+	line_len = str_count(line);
 
-	array_tok = malloc(sizeof(char *) * (line_len + 1)); /*se asigna la memoria para el array*/
-	if (array_tok == NULL) /*si malloc falla, sale*/
+	if (line_len > 0)
 	{
-		free(line);
-		return (NULL);
-	}
-	token = strtok(line, "\n\t "); /*se separa la linea en tokens*/
-	while (token != NULL)
-	{
-		array_tok[i] = strdup(token); /*se guardan los tokens en el array*/
-		if (array_tok[i] == NULL) /*si falla el duplicado de un token*/
+		array_tok = malloc(sizeof(char *) * (line_len + 1));
+		if (array_tok == NULL)
 		{
-			free_arr(array_tok); /*se libera toda la memoria utilizada antes y sale*/
+			free(line);
 			return (NULL);
 		}
-		token = strtok(NULL, "\t\n ");
-		i++;
+		token = strtok(line, "\n\t ");
+		while (token != NULL)
+		{
+			array_tok[i] = strdup(token);
+			if (array_tok[i] == NULL)
+			{
+				for (j = 0; j <= i; j++)
+					free(array_tok[j]);
+				free(array_tok);
+				free(token);
+				return (NULL);
+			}
+			token = strtok(NULL, "\t\n ");
+			i++;
+		}
+		array_tok[i] = NULL;
 	}
-	array_tok[i] = NULL; /*se apunta el ultimo elemento a null*/
-	return (array_tok); /*la funcion devuelve el array de tokens*/
+	return (array_tok);
 }
 
 /**
@@ -45,17 +51,19 @@ char **store_tokens(char *line)
  */
 int str_count(char *str)
 {
-	int i, flag = 1, count = 0;
+	int i = 0, count = 0;
 
-	for (i = 0; str[i]; i++)
+	while (str[i])
 	{
-		if (str[i] != ' ' && flag == 1)
+		if (str[i] == ' ')
+			i++;
+		else
 		{
-			count += 1;
-			flag = 0; /*flag es cero si el caracter no es un espacio*/
+			count++;
+			i++;
+			while (str[i] && str[i] != ' ')
+				i++;
 		}
-		if (str[i + 1] == ' ')
-			flag = 1; /*flag es 1 si se encuentra un espacio*/
 	}
 	return (count);
 }
@@ -69,27 +77,25 @@ int str_count(char *str)
 char *get_env(char *var_name)
 {
 	int i = 0;
-	char *var_value; /*el valor que viene en el PATH*/
+	char *var_value;
 	size_t len_value, len_name = strlen(var_name);
 
-	while (environ[i] != NULL) /*recorido por las variables de entorno*/
+	while (environ[i] != NULL)
 
 	{
-		len_value = strlen(environ[i]); /*largo de la variable*/
-		var_value = malloc((len_value + 1) * sizeof(char)); /*asignacion de memoria para la variable*/
-		if (var_value == NULL) /*revision de malloc, si falla termina*/
+		len_value = strlen(environ[i]);
+		var_value = malloc((len_value + 1) * sizeof(char));
+		if (var_value == NULL)
 		{
 			perror("malloc");
 			return (NULL);
 		}
 		if (strncmp(var_name, environ[i], len_name) == 0)
-		/*se compara el nombre de la variable buscada con la encontrada en environ*/
-		/*si coincide se copia el contenido de environ[i] y la funcion devuelve su valor*/
 		{
 			strcpy(var_value, environ[i]);
 			return (var_value);
 		}
-		free(var_value); /*si no coincide se libera la memoria y sigue buscando*/
+		free(var_value);
 		i++;
 	}
 	return (NULL);
@@ -105,14 +111,17 @@ int path_match(char **array_tok)
 	char *path, *fullpath, *path_value;
 	struct stat ex;
 
-	path = get_env("PATH"); /*se guarda en path el valor de la variable de entorno obtenido con get_env*/
-	path_value = strtok(path, ":"); /*se divide en tokens el contenido del PATH*/
+	path = get_env("PATH");
+	if (path == NULL)
+		return (1);
+	path_value = strtok(path, ":");
 	while (path_value != NULL)
 	{
-		fullpath = fullpath_func(*array_tok, path_value); /*se contruye la ruta completa de busqueda del comando*/
-		if (stat(fullpath, &ex) == 0) /*si en esa ruta se encuentra el archivo ejecutable*/
-		{
-			*array_tok = strdup(fullpath); /*se guarda la ruta completa en array_tok*/
+		fullpath = fullpath_func(*array_tok, path_value);
+		if (stat(fullpath, &ex) == 0)
+		{ /*tengo que liberar array_tok antes de hacer dup?*/
+			free(array_tok[0]);
+			*array_tok = strdup(fullpath);
 			free(fullpath);
 			free(path);
 			return (0);
@@ -134,21 +143,21 @@ int path_match(char **array_tok)
 
 char *fullpath_func(char *array_tok, char *path_value)
 {
-	char *command; /*ruta completa de busqueda del comando*/
+	char *command;
 	size_t len = 0;
 
-	len = strlen(path_value) + strlen(array_tok) + 2; /*largo de la cadena +2 para / y el nulo de strcat*/
+	len = strlen(path_value) + strlen(array_tok) + 2;
 	command = malloc(sizeof(char) * len);
-	if (command == NULL) /*se verifica la reserva de memoria, si falla sale*/
+	if (command == NULL)
 	{
 		return (NULL);
 	}
 
-	memset(command, 0, len); /*inicializacion del array que guardara el comando*/
+	memset(command, 0, len);
 
 	command = strcat(command, path_value);
 	command = strcat(command, "/");
-	command = strcat(command, array_tok); /*concatenacion del valor del path con el comando del usuario*/
+	command = strcat(command, array_tok);
 
 	return (command);
 }

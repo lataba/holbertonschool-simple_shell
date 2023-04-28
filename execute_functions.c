@@ -10,25 +10,28 @@
 int fork_child(char *fullpath, char **array_tok)
 {
 	pid_t pid;
-	int child_status, execve_status;
+	int child_status, execve_status, output_status = 0;
 	char **env = environ;
 
 	pid = fork();
 	if (pid == -1)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
-	}
+		exit(errno);
 	if (pid == 0)
 	{
-		execve_status = execve(fullpath, array_tok, env);
-		if (execve_status == -1)
-			return (-1);
+		if (fullpath != 0)
+		{
+			execve_status = execve(fullpath, array_tok, env);
+			if (execve_status == -1)
+				exit(errno);
+		}
 	}
 	else
 		wait(&child_status);
 
-	return (0);
+	if (WIFEXITED(child_status))
+		output_status = WEXITSTATUS(child_status);
+	free(fullpath);
+	return (output_status);
 }
 
 /**
@@ -50,10 +53,10 @@ void free_arr(char **array)
  * Return: void
  */
 
-	int shell_exit(void)
-	{
-		return (-1);
-	}
+int shell_exit(void)
+{
+	return (-1);
+}
 
 
 /**
@@ -61,25 +64,25 @@ void free_arr(char **array)
  * Return: void
  */
 
-	int shell_env(void)
-	{
-		unsigned int i;
+int shell_env(void)
+{
+	unsigned int i;
 
-		i = 0;
-		while (environ[i] != NULL)
-		{
-			write(STDOUT_FILENO, environ[i], strlen(environ[i]));
-			write(STDOUT_FILENO, "\n", 1);
-			i++;
-		}
-		return (0);
+	i = 0;
+	while (environ[i] != NULL)
+	{
+		write(STDOUT_FILENO, environ[i], strlen(environ[i]));
+		write(STDOUT_FILENO, "\n", 1);
+		i++;
 	}
+	return (0);
+}
 
 /**
-**builtin_execute - executes the built in functions
-**@tokens: arguments being passed
-**Return: tokens
-**/
+ **builtin_execute - executes the built in functions
+ **@tokens: arguments being passed
+ **Return: tokens
+ **/
 int builtin_execute(char **tokens)
 {
 	int status;
@@ -111,10 +114,10 @@ int builtin_execute(char **tokens)
 }
 
 /**
-**shell_num_builtins - this check num built-ins
-**@builtin: takes the builtin to be counted
-**Return: num of built-ins
-**/
+ **shell_num_builtins - this check num built-ins
+ **@builtin: takes the builtin to be counted
+ **Return: num of built-ins
+ **/
 
 int shell_num_builtins(built_s builtin[])
 {
