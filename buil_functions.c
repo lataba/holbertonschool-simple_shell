@@ -48,9 +48,6 @@ int builtin_execute(char **tokens)
 		{NULL, NULL}
 	};
 
-	/*if (tokens[0] == NULL)
-		return (1);*/
-
 	length = strlen(tokens[0]);
 
 	num = shell_num_builtins(builtin);

@@ -2,7 +2,6 @@
 
 /**
  * fork_child - Function that creats a child process
- * @fullpath: full path of the executable file of the command
  * @array_tok: the tokenidez command line given by the user
  * Return: 0 if success, -1 if fail
  */
@@ -25,8 +24,8 @@ int fork_child(char **array_tok)
 			path_match(array_tok);
 		if (execve(*array_tok, array_tok, env) == -1)
 		{
-			perror("Shell");
-			exit(errno);
+			dprintf(STDERR_FILENO, "./hsh: 1: %s: not found\n", array_tok[0]);
+			return (127);
 		}
 	}
 	wait(&child_status);
