@@ -111,7 +111,7 @@ int path_match(char **array_tok)
 
 	path = get_env("PATH");
 	if (path == NULL)
-		return (1); /*127???*/
+		return (127);
 	path_value = strtok(path, ":");
 	while (path_value != NULL)
 	{

@@ -21,7 +21,11 @@ int fork_child(char **array_tok)
 	if (pid == 0)
 	{
 		if (strncmp(*array_tok, "/", 1) != 0 && strncmp(*array_tok, "./", 2) != 0)
-			path_match(array_tok);
+			if (path_match(array_tok) == 127)
+			{
+				dprintf(STDERR_FILENO, "./hsh: 1: %s: not found\n", array_tok[0]);
+				return (127);
+			}
 		if (execve(*array_tok, array_tok, env) == -1)
 		{
 			dprintf(STDERR_FILENO, "./hsh: 1: %s: not found\n", array_tok[0]);

@@ -30,11 +30,11 @@ int main(void)
 		if (command != NULL)
 		{
 			status = builtin_execute(command);
-			if (status == -1)
+			if (status == 2)
 			{
 				free_arr(command);
 				free(line);
-				exit(EXIT_SUCCESS);
+				exit(status);
 			}
 			if (status == 1)
 				status = fork_child(command);
