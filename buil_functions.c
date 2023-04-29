@@ -7,7 +7,7 @@
 
 int shell_exit(void)
 {
-	return (2);
+	return (-1);
 }
 
 
