@@ -13,11 +13,13 @@
 #include <errno.h>
 #include <linux/limits.h>
 
+/*global variable containing the environ variables values*/
+
 extern char **environ;
 
 /**
- * struct built_s - linked list of builtins
- * @name: name of builtin
+ * struct built_s - list of builtins
+ * @name: name of builtin function
  * @p: pointer to function
  *
  * Description: struct for builtin functions.
@@ -27,6 +29,8 @@ typedef struct built_s
 	char *name;
 	int (*p)(void);
 } built_s;
+
+/*functions of the simple_shell*/
 
 char **store_tokens(char *line);
 int str_count(char *str);

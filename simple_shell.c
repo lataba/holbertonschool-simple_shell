@@ -15,7 +15,7 @@ int main(void)
 	while (1)
 	{
 		len = 0;
-		if (isatty(STDIN_FILENO) != 0)
+		if (isatty(STDIN_FILENO) != 0) /*print prompt on interactive mode*/
 			printf("$ ");
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
@@ -26,17 +26,17 @@ int main(void)
 			continue; }
 		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
-		command = store_tokens(line);
+		command = store_tokens(line); /*tokenize the user command line*/
 		if (command != NULL)
 		{
-			status = builtin_execute(command);
+			status = builtin_execute(command); /*execute - builtin functions*/
 			if (status == -1)
 			{
 				free_arr(command);
 				free(line);
-				_exit(EXIT_SUCCESS);
+				exit(EXIT_SUCCESS);
 			}
-			if (status == 1)
+			if (status == 1) /*if is not builtin, execute command function*/
 				status = fork_child(command);
 			free_arr(command);
 		}

@@ -12,13 +12,13 @@ int fork_child(char **array_tok)
 	int child_status, output_status = 0;
 	char **env = environ;
 
-	pid = fork();
+	pid = fork(); /*fork call to creat a new process*/
 	if (pid == -1)
 	{
 		perror("Error");
 		return (-1);
 	}
-	if (pid == 0)
+	if (pid == 0) /*execute the command inside a child process*/
 	{
 		if (strncmp(*array_tok, "/", 1) != 0 && strncmp(*array_tok, "./", 2) != 0)
 			if (path_match(array_tok) == 127)
@@ -32,7 +32,7 @@ int fork_child(char **array_tok)
 			return (127);
 		}
 	}
-	wait(&child_status);
+	wait(&child_status); /*parent process waiting for the child process finish*/
 
 	if (WIFEXITED(child_status))
 		output_status = WEXITSTATUS(child_status);
@@ -50,6 +50,6 @@ void free_arr(char **array)
 
 	i = 0;
 	for (i = 0; array[i] ; i++)
-		free(array[i]);
-	free(array);
+		free(array[i]); /*free each*/
+	free(array); /*free all*/
 }
