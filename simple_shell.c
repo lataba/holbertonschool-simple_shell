@@ -34,7 +34,7 @@ int main(void)
 			{
 				free_arr(command);
 				free(line);
-				exit(EXIT_SUCCESS);
+				_exit(EXIT_SUCCESS);
 			}
 			if (status == 1)
 				status = fork_child(command);
