@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * store_tokens - Funcion that separates the line in arguments
+ * store_tokens - Funcion that separates the user command line
  * @line: The line that user writes on the stdin
  * Return: A double poniter to an array that stores the arguments (tokens)
  */
@@ -19,10 +19,10 @@ char **store_tokens(char *line)
 	if (line_len > 0)
 	{
 		array_tok = malloc(sizeof(char *) * (line_len + 1));
-		if (array_tok == NULL)
+		if (array_tok == NULL) /*allocate memory if is possible*/
 			return (NULL);
 
-		token = strtok(line, "\n\t ");
+		token = strtok(line, "\n\t "); /*tokenize the line*/
 		while (token != NULL)
 		{
 			array_tok[i] = strdup(token);
@@ -53,11 +53,11 @@ int str_count(char *str)
 
 	while (str[i])
 	{
-		if (str[i] == ' ')
+		if (str[i] == ' ') /*if is space, skip to the next*/
 			i++;
 		else
 		{
-			count++;
+			count++; /*words accountat*/
 			i++;
 			while (str[i] && str[i] != ' ')
 				i++;
@@ -80,20 +80,21 @@ char *get_env(char *var_name)
 
 	while (environ[i] != NULL)
 
-	{
+	{                              /*alloc memory for the path value*/
 		len_value = strlen(environ[i]);
 		var_value = malloc((len_value + 1) * sizeof(char));
-		if (var_value == NULL)
+		if (var_value == NULL) /*if alloc fails, return NULL*/
 		{
 			perror("malloc");
 			return (NULL);
 		}
-		if (strncmp(var_name, environ[i], len_name) == 0)
-		{
+		if ((strncmp(var_name, environ[i], len_name) == 0)
+				&& (environ[i][len_name] == '='))
+		{    /*if the environ variable is found, return it*/
 			strcpy(var_value, environ[i]);
 			return (var_value);
 		}
-		free(var_value);
+		free(var_value); /*free the allocated memory*/
 		i++;
 	}
 	return (NULL);
@@ -109,15 +110,15 @@ int path_match(char **array_tok)
 	char *path, *fullpath, *path_value;
 	struct stat ex;
 
-	path = get_env("PATH");
+	path = get_env("PATH");  /*call get_env to get the PATH value*/
 	if (path == NULL)
 		return (127);
-	path_value = strtok(path, ":");
+	path_value = strtok(path, ":");  /*tokenize the path*/
 	while (path_value != NULL)
 	{
 		fullpath = fullpath_func(*array_tok, path_value);
 		if (stat(fullpath, &ex) == 0)
-		{
+		{                              /*built the fullpath*/
 			free(array_tok[0]);
 			*array_tok = strdup(fullpath);
 			free(fullpath);
@@ -147,15 +148,15 @@ char *fullpath_func(char *array_tok, char *path_value)
 	len = strlen(path_value) + strlen(array_tok) + 2;
 	command = malloc(sizeof(char) * len);
 	if (command == NULL)
-	{
+	{                        /*alloc memory to the fullpath*/
 		return (NULL);
 	}
 
-	memset(command, 0, len);
-
+	memset(command, 0, len); /*array initialiced*/
+/*concatenate the path with the command name*/
 	command = strcat(command, path_value);
 	command = strcat(command, "/");
 	command = strcat(command, array_tok);
 
-	return (command);
+	return (command); /*return the fullpath*/
 }
