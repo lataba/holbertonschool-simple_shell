@@ -21,7 +21,7 @@ int fork_child(char **array_tok)
 	}
 	if (pid == 0)
 	{
-		if (strncmp(*array_tok, "./", 2) != 0 && strncmp(*array_tok, "/", 1) != 0)
+		if (strncmp(*array_tok, "/", 1) != 0 && strncmp(*array_tok, "./", 2) != 0)
 			path_match(array_tok);
 		if (execve(*array_tok, array_tok, env) == -1)
 		{
@@ -29,8 +29,7 @@ int fork_child(char **array_tok)
 			exit(errno);
 		}
 	}
-	else
-		wait(&child_status);
+	wait(&child_status);
 
 	if (WIFEXITED(child_status))
 		output_status = WEXITSTATUS(child_status);
