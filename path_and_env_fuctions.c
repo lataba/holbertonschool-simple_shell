@@ -89,7 +89,7 @@ char *get_env(char *var_name)
 			return (NULL);
 		}
 		if ((strncmp(var_name, environ[i], len_name) == 0)
-				&& (environ[i][len_name + 1 == '=']))
+				&& (environ[i][len_name + 1] == '='))
 		{
 			strcpy(var_value, environ[i]);
 			return (var_value);
