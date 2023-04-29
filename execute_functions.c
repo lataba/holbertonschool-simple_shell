@@ -7,22 +7,26 @@
  * Return: 0 if success, -1 if fail
  */
 
-int fork_child(char *fullpath, char **array_tok)
+int fork_child(char **array_tok)
 {
 	pid_t pid;
-	int child_status, execve_status, output_status = 0;
+	int child_status, output_status = 0;
 	char **env = environ;
 
 	pid = fork();
 	if (pid == -1)
-		exit(errno);
+	{
+		perror("Error");
+		return (-1);
+	}
 	if (pid == 0)
 	{
-		if (fullpath != 0)
+		if (strncmp(*array_tok, "./", 2) != 0 && strncmp(*array_tok, "/", 1) != 0)
+			path_match(array_tok);
+		if (execve(*array_tok, array_tok, env) == -1)
 		{
-			execve_status = execve(fullpath, array_tok, env);
-			if (execve_status == -1)
-				exit(errno);
+			perror("Shell");
+			exit(errno);
 		}
 	}
 	else

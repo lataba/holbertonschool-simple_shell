@@ -20,10 +20,8 @@ char **store_tokens(char *line)
 	{
 		array_tok = malloc(sizeof(char *) * (line_len + 1));
 		if (array_tok == NULL)
-		{
-			free(line);
 			return (NULL);
-		}
+
 		token = strtok(line, "\n\t ");
 		while (token != NULL)
 		{
@@ -119,7 +117,7 @@ int path_match(char **array_tok)
 	{
 		fullpath = fullpath_func(*array_tok, path_value);
 		if (stat(fullpath, &ex) == 0)
-		{ /*tengo que liberar array_tok antes de hacer dup?*/
+		{
 			free(array_tok[0]);
 			*array_tok = strdup(fullpath);
 			free(fullpath);

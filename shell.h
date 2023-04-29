@@ -34,7 +34,7 @@ char *get_env(char *var_name);
 int path_match(char **array_tok);
 char *fullpath_func(char *array_tok, char *path_value);
 void free_arr(char **array);
-int fork_child(char *fullpath, char **array_tok);
+int fork_child(char **array_tok);
 int shell_env(void);
 int shekk_exit(void);
 int builtin_execute(char **tokens);
