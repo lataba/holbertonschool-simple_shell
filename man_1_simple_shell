@@ -1,0 +1,41 @@
+SIMPLE SHELL MAN
+
+NAME
+        hsh - A simple shell written in C
+
+COMPILING
+        gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
+
+EXECUTING
+        ./hsh
+
+DESCRIPTION
+        The hsh program is a simple shell written in C.
+        The shell accepts commands from the user and executes them, emulating the behavior of a Unix terminal
+
+
+USAGE
+        There are two ways to run the hsh shell:
+
+        Interactive mode: where the "$" prompt appears for the user to enter commands. The prompt will repeat until "exit" or "Ctrl + D" is executed.
+
+        Non-interactive mode: where the output of a command can be sent as input to the ./hsh program using the pipe command.
+
+        If no script file is provided, the shell will run in interactive mode.
+
+EXAMPLES
+        - Execute simple commands:
+        $ ./hsh
+        $ ls
+
+        - Execute commands whit arguments:
+        $ ./hsh
+        $ ls -l
+
+        - Non-interactive mode:
+
+        $ echo "/bin/ls" | ./hsh
+
+
+AUTHORS
+        Nicolas Fernandez and Laura Ballesté
