@@ -11,10 +11,10 @@ In other words, a shell is a user interface that allows users to interact with t
 
 This is a simple shell implementation in C that can work in both interactive and non-interactive mode. The shell can run commands and support basic shell functionalities.
 
-<img src="https://github.com/lataba/holbertonschool-simple_shell/blob/41d998864024a2684f2186605ca5d085f1d8ceaf/SHELL.jpeg" alt="shell" width="70%" height="75%">
-
 ## How does this Shell work? 
 This is a flowchart that contains the working flow of the code of this simple shell.
+
+<img src="https://github.com/lataba/holbertonschool-simple_shell/blob/41d998864024a2684f2186605ca5d085f1d8ceaf/SHELL.jpeg" alt="shell" width="70%" height="75%">
 
 ## File Structure :file_folder: 
 This table provides a detailed description of the files used for this shell implementation. In these files are the functions that constitute the program.
